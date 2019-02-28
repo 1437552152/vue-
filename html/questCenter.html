@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta charset="utf-8" />
+	<title>答疑中心</title>
+	<link rel="icon" href="favicon.ico" />
+	<link rel="stylesheet" href="https://cdn.staticfile.org/twitter-bootstrap/3.3.7/css/bootstrap.min.css">
+	<link rel="stylesheet" rel="stylesheet/less" type="text/less" href="less/common.less" />
+	<link rel="stylesheet" rel="stylesheet/less" type="text/less" href="css/questCenter.css" />
+	<script src="//cdnjs.cloudflare.com/ajax/libs/less.js/3.9.0/less.min.js"></script>
+	<link href="https://cdnjs.cloudflare.com/ajax/libs/Swiper/4.3.0/css/swiper.min.css" rel="stylesheet">
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+	<script src="js/swiper.min.js" type="text/javascript" charset="utf-8"></script>
+	<script src="https://cdn.staticfile.org/vue/2.4.2/vue.min.js"></script>
+	<script src="https://cdn.bootcss.com/axios/0.16.2/axios.min.js"></script>
+</head>
+
+<body>
+	<div class="box" id="app" v-cloak>
+		<div class="top">
+				<div class="w1200">
+					<a href="index.html" title="捷航教育科技有限公司" class="pull-left">
+						<div class="logo"><img src="img/logo.png"></div>
+					</a>
+					<ul class="navhead">
+							<li class="active">
+								<a href="index.html">首页</a>
+							</li>
+							<li v-for="item in list">
+								<span>{{item.typeid}}</span>
+								<ul>
+									<li v-for="sing in item.countrylist"><a       v-bind:href="'country.html?id='+sing.Id">{{sing.country}}</a></li>
+									
+								</ul>
+							</li>							
+							<li>
+								<a href="plan.html">留学服务</a>
+							</li>
+							<li>
+								<a href="questCenter.html">答疑中心</a>
+							</li>
+							<li>
+								<a href="about.html?id=1">公司简介</a>
+							</li>
+							<div class="clearfix"></div>
+						</ul>
+					<div class="phone pull-right">
+						<p>咨询热线:15301813081</p>
+					</div>
+					<div class="clearfix"></div>
+				</div>
+			</div>
+			<!--头部导航-->
+			<!--<header>
+				<div class="w1200">
+
+					<dl class="tnRight">
+
+						
+						<div class="clearfix"></div>
+					</dl>
+
+				</div>
+			</header>-->
+
+		<div class="wrap">
+			<!--轮播图-->
+			<div class="swiper-container" style="width: 100%;min-width: 1200px;height:500px">
+				<div class="swiper-wrapper bannerImg">
+					<div class="swiper-slide">
+						<img src="images/banner1.png">
+					</div>
+					<div class="swiper-slide">
+						<img src="images/banner2.jpg">
+					</div>
+
+					<div class="swiper-slide">
+						<img src="images/banner3.jpg">
+					</div>
+
+				</div>
+				<div class="swiper-pagination dotPos"></div>
+			</div>
+		</div>
+
+		<!--周边-->
+		<div class="per">
+			<div class="per_two fl">
+				<h6>常见问题</h6>
+				<div class="ser">
+					<div class="ser_list" v-for="item in liuyanlist">
+						<div class="question"><span>问</span>
+							<p>{{item.content}}</p>
+						</div>
+						<div class="answer">
+							<span class="fl">答</span>
+							<p class="fl">{{item.article}}</p>
+							<div class="clearfix"></div>
+						</div>
+						<p class="time_question">提问日期：{{item.addtime}}</p>
+					</div>
+				</div>
+			</div>
+			<div class="fr inquire">
+				<p>立即咨询</p>
+				<div class="form_div">
+					<input type="text" placeholder="您的姓名" v-model="formInline.username">
+					<input type="number" placeholder="您的电话" v-model="formInline.phone">
+					<textarea name="" id="" cols="30" rows="10" placeholder="您的问题" v-model="formInline.content"></textarea>
+					<button @click="submit">立即提交</button>
+				</div>
+			</div>
+			<div class="clearfix"></div>
+		</div>
+
+		<!--尾部-->
+		<iframe frameborder="0" scrolling="no" src="footer.html" height="516px" width="100%" style="min-width:1200px;"></iframe>
+	</div>
+</body>
+<script src="config.js" type="text/javascript" charset="utf-8"></script>
+<script type="text/javascript">
+	window.onload = function () {
+		var vm = new Vue({
+			el: '#app',
+			data: {
+				list: null,
+				liuyanlist: null,
+				formInline: {
+					username: null,
+					phone: null,
+					email: null,
+					QQ: null,
+					content: null
+				}
+			},
+			methods: {
+				submit: function () {
+					var that = this;
+					axios({
+						method: 'post',
+						url: "/liuyan",
+						params: that.formInline
+					}).then((res) => {
+						alert(res.data.msg)
+						that.formInline.username = "";
+						that.formInline.phone = "";
+						that.formInline.content = "";
+						//								}
+					})
+				},
+				getData: function (url, params) {
+					axios({
+						method: 'get',
+						url: url,
+						data: params
+					}).then((res) => {
+						console.log(res)
+						res.data.data.forEach(function (item, index) {
+							if (item.typeid == 'zo') {
+								item.typeid = "中欧"
+							} else if (item.typeid == 'do') {
+								item.typeid = "东欧"
+							} else if (item.typeid == 'xo') {
+								item.typeid = "西欧"
+							} else if (item.typeid == 'bo') {
+								item.typeid = "北欧"
+							} else if (item.typeid == 'no') {
+								item.typeid = "南欧"
+							} else if (item.typeid == 'dny') {
+								item.typeid = "东南亚"
+							}
+
+						})
+						this.list = res.data.data;
+					})
+				},
+
+				getLiuyanList: function (url, params) {
+					axios({
+						method: 'get',
+						url: url,
+						data: params
+					}).then((res) => {
+						this.liuyanlist = res.data.data
+					})
+				},
+
+
+			},
+			created() {
+				//得到导航
+				this.getData("/getcountry", {})
+
+				//得到常见问题的回复
+				this.getLiuyanList("/liuyan/list", {})
+
+
+			}
+		})
+
+	}
+</script>
+
+</html>
